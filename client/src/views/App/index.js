@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
+import {Game} from '../Game';
 
 const cookies = new Cookies();
 
@@ -18,12 +19,14 @@ export class App extends React.Component {
     this.setState({user});
   };
 
+  // Game
+  // <button onClick={this.setPlayer}>Player</button>
+  // You are user: {this.state.user}
+  
   render() {
     return (
       <div>
-        Game
-        <button onClick={this.setPlayer}>Player</button>
-        You are user: {this.state.user}
+        <Game />
       </div>
     );
   }

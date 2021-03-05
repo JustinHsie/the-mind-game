@@ -1,6 +1,7 @@
 import express from 'express';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { Game } from './Game/Game';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,11 +14,27 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-let players = 0;
-app.get('/players', (req, res) => {
-  players++;
-  res.json(players);
+// Gameplay
+let game = null;
+
+app.get('/game/new', (req, res) => {
+  game = new Game();
 })
+
+app.post('/players/new', (req, res) => {
+  game.addPlayer();
+  res.sendStatus(200);
+});
+
+app.get('/cards/deal', (req, res) => {
+  game.dealCards();
+  res.sendStatus(200);
+});
+
+app.post('/cards/play', (req, res) => {
+  game.playCard();
+  res.sendStatus(200);
+});
 
 // Catch all requests and return index
 app.get('*', (req, res) => {
