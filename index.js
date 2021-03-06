@@ -2,10 +2,15 @@ import express from 'express';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Game } from './Game/game.js';
+import { Server } from 'socket.io';
+import { createServer } from 'http';
+
+const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const app = express();
 
 // Serve static files from React app
 app.use(express.static(path.join(__dirname, 'client/build')));
@@ -51,6 +56,13 @@ app.post('/cards/play', (req, res) => {
 // Get player
 app.get('/players/');
 
+// Socket io listen
+io.on('connection', socket => {
+  socket.on('event', () => {
+    io.emit('event', game);
+  });
+});
+
 // Catch all requests and return index
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client/build/index.html'));
@@ -58,6 +70,6 @@ app.get('*', (req, res) => {
 
 // Port
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Serving on port ${port}`);
 });

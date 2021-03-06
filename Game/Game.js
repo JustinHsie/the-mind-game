@@ -1,8 +1,6 @@
-import { PlayerDb } from './playerDb.js';
-
 export class Game {
   constructor() {
-    this.playerDb = new PlayerDb();
+    this.players = [];
     this.totalCards = 0;
     this.pile = [0];
     this.lvl = 1;
@@ -64,33 +62,39 @@ export class Game {
   // Gameplay
 
   addPlayer = name => {
-    let id = this.playerDb.addPlayer(name);
+    let id = this.players.length;
+    this.players.push({
+      id,
+      name,
+      hand: [],
+    });
     return id;
   };
 
   dealCards = () => {
     let deck = this.getShuffledDeck();
-    let numPlayers = this.playerDb.players;
-    let players = this.dealCardsHelp(numPlayers, deck);
-    return players;
+    this.dealCardsHelp(this.players, deck);
+    return this.players;
   };
 
   getPlayer = playerId => {
-    return this.playerDb.players[playerId];
+    return this.players[playerId];
   };
 
   playCard = playerId => {
     let player = this.getPlayer(playerId);
     let card = player.hand.pop();
-
-    if (this.pile[this.pile.length - 1] < card) {
-      this.pile.push(card);
+    this.pile.push(card);
+    
+    // Check if anyone else has smaller cards
+    let smaller = this.players.filter(player => player.hand[player.hand.length - 1] < card);
+    if (smaller.length > 0) {
+      console.log('Game over')
     }
-    if (this.pile.length === this.totalCards) {
+    // Game won
+    if (this.pile.length - 1 === this.totalCards) {
       console.log(`Level ${this.lvl} passed!`);
       this.lvl++;
-    } else {
-      console.log('Game over');
     }
   };
 }
