@@ -1,7 +1,7 @@
 import express from 'express';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Game } from './Game/Game';
+import { Game } from './Game/game.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,24 +17,39 @@ app.use(express.urlencoded({ extended: true }));
 // Gameplay
 let game = null;
 
+// New game
 app.get('/game/new', (req, res) => {
   game = new Game();
-})
-
-app.post('/players/new', (req, res) => {
-  game.addPlayer();
-  res.sendStatus(200);
+  res.json(game);
 });
 
+// Get current game
+app.get('/game', (req, res) => {
+  res.json(game);
+});
+
+// Add Player
+app.post('/players/new', (req, res) => {
+  let { name } = req.body;
+  let id = game.addPlayer(name);
+  res.json(id);
+});
+
+// Deal cards
 app.get('/cards/deal', (req, res) => {
   game.dealCards();
   res.sendStatus(200);
 });
 
+// Play card
 app.post('/cards/play', (req, res) => {
-  game.playCard();
+  let { id } = req.body;
+  game.playCard(id);
   res.sendStatus(200);
 });
+
+// Get player
+app.get('/players/');
 
 // Catch all requests and return index
 app.get('*', (req, res) => {

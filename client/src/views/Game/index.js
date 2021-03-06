@@ -1,47 +1,61 @@
 import React from 'react';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
-
-const cookies = new Cookies();
+import { Game as GameComponent } from '../../components/Game';
+import { Menu } from '../../components/Menu';
 
 export class Game extends React.Component {
   constructor(props) {
     super(props);
-    cookies.set('1', 'Player1', { path: '/' });
-    this.state = { id: '' };
-    this.card = 45;
-    this.setPlayer();
+    this.state = { id: null, game: null };
   }
 
-  setPlayer = async () => {
-    const res = await axios.get('/player');
-    let id = res.data;
-    console.log(id);
-    cookies.set(id, id, { path: '/' });
-    this.setState({ id });
+  componentDidMount() {
+    this.newGame();
+  }
+  
+  newGame = async () => {
+    let res = await axios.get('/game/new');
+    let game = res.data;
+    this.setState({ game });
+    console.log(this.state.game);
+  };
+
+  getCurrentGame = async () => {
+    let res = await axios.get('/game');
+    let game = res.data;
+    this.setState({ game });
+    console.log(this.state.game);
   };
 
   addPlayer = async () => {
-    await axios.post('/players/new');
+    let res = await axios.post('/players/new');
+    let id = res.data;
+    this.setState({ id });
+    console.log(this.state.id);
+
+    this.getCurrentGame();
   };
 
   dealCards = async () => {
     await axios.get('/cards/deal');
+    this.getCurrentGame();
   };
 
   playCard = async () => {
     let id = this.id;
-    let card = this.card;
     await axios.post('/cards/play', { id });
+    this.getCurrentGame();
   };
 
   render() {
     return (
       <div>
-        Game
+        <Menu onNewGameClick={this.newGame}/>
+        <button onClick={this.newGame}>New Game</button>
         <button onClick={this.addPlayer}>Add Player</button>
         <button onClick={this.dealCards}>Deal Cards</button>
         <button onClick={this.playCard}>Play Card</button>
+        <GameComponent />
       </div>
     );
   }

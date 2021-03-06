@@ -8,6 +8,6 @@ export class PlayerDb {
       name,
       hand: [],
     });
-    console.log(this.players);
+    return this.players.length;
   };
 }

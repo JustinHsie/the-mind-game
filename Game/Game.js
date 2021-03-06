@@ -1,4 +1,4 @@
-import { PlayerDb } from 'PlayerDb';
+import { PlayerDb } from './playerDb.js';
 
 export class Game {
   constructor() {
@@ -63,8 +63,9 @@ export class Game {
 
   // Gameplay
 
-  addPlayer = () => {
-    this.playerDb.addPlayer();
+  addPlayer = name => {
+    let id = this.playerDb.addPlayer(name);
+    return id;
   };
 
   dealCards = () => {
@@ -79,7 +80,7 @@ export class Game {
   };
 
   playCard = playerId => {
-    let player = this.getPlayer(1);
+    let player = this.getPlayer(playerId);
     let card = player.hand.pop();
 
     if (this.pile[this.pile.length - 1] < card) {
