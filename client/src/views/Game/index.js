@@ -9,7 +9,7 @@ export class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: null,
+      id: '',
       name: '',
       hand: [],
       topCard: null,
@@ -17,34 +17,79 @@ export class Game extends React.Component {
       lvl: 1,
       pileTop: 0,
       players: [],
+      smallestPlayer: null,
     };
     socket.on('event', game => {
       let lvl = game.lvl;
       let pileTop = game.pile[game.pile.length - 1];
       let players = game.players;
-      let player = game.players[this.state.id];
-      let topCard = player.hand[player.hand.length - 1];
-      let hand = player.hand;
-      this.setState({ hand, topCard, game, lvl, pileTop, players });
+      let topCard = null;
+      let hand = null;
+      let smallestPlayer = game.smallestPlayer;
+      if (this.state.id !== '') {
+        let player = game.players[this.state.id];
+        topCard = player.hand[player.hand.length - 1];
+        hand = player.hand;
+      }
+      this.setState({
+        hand,
+        topCard,
+        game,
+        lvl,
+        pileTop,
+        players,
+        smallestPlayer,
+      });
     });
+    socket.on('newGame', game => {
+      this.setState({
+        id: '',
+        name: '',
+        hand: [],
+        topCard: null,
+        game,
+        lvl: 1,
+        pileTop: 0,
+        players: [],
+        smallestPlayer: null,
+      });
+    });
+  }
+
+  componentDidMount() {
+    this.getSession();
+    this.getCurrentGame();
   }
 
   componentWillUnmount() {
     socket.disconnect();
   }
 
+  getSession = async () => {
+    let res = await axios.get('/session');
+    let id = res.data;
+    this.setState({ id });
+  };
+
+  handleNameChange = e => {
+    this.setState({ name: e.target.value });
+  };
+
   newGame = async () => {
     await axios.get('/game/new');
-    this.setState({
-      id: null,
-      name: '',
-      hand: [],
-      topCard: null,
-      game: null,
-      lvl: 1,
-      pileTop: 0,
-      players: [],
-    });
+    socket.emit('newGame');
+    // this.setState({
+    //   id: '',
+    //   name: '',
+    //   hand: [],
+    //   topCard: null,
+    //   gameStatus: null,
+    //   lvl: 1,
+    //   pileTop: 0,
+    //   players: [],
+    //   smallestPlayer: null,
+    // });
+    // this.getCurrentGame();
   };
 
   getCurrentGame = async () => {
@@ -53,7 +98,8 @@ export class Game extends React.Component {
   };
 
   addPlayer = async () => {
-    let res = await axios.post('/players/new', { name: 'Me' });
+    let name = this.state.name;
+    let res = await axios.post('/players/new', { name });
     let id = res.data;
     this.setState({ id });
     this.getCurrentGame();
@@ -74,12 +120,16 @@ export class Game extends React.Component {
     return (
       <div className="p-m-3">
         <Menu onNewGameClick={this.newGame} />
-        <button onClick={this.addPlayer}>Add Player</button>
-        <button onClick={this.dealCards}>Deal Cards</button>
         <GameComponent
+          id={this.state.id}
+          name={this.state.name}
+          onNameChange={this.handleNameChange}
+          onJoinClick={this.addPlayer}
           lvl={this.state.lvl}
           pileTop={this.state.pileTop}
+          smallestPlayer={this.state.smallestPlayer}
           players={this.state.players}
+          onDealClick={this.dealCards}
           onPlayCardClick={this.playCard}
           hand={this.state.hand}
           topCard={this.state.topCard}

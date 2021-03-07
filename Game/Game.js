@@ -4,6 +4,7 @@ export class Game {
     this.totalCards = 0;
     this.pile = [0];
     this.lvl = 1;
+    this.smallestPlayer = null;
   }
 
   /**
@@ -85,15 +86,22 @@ export class Game {
     let player = this.getPlayer(playerId);
     let card = player.hand.pop();
     this.pile.push(card);
-    
+
     // Check if anyone else has smaller cards
-    let smaller = this.players.filter(player => player.hand[player.hand.length - 1] < card);
-    if (smaller.length > 0) {
-      console.log('Game over')
+    let smallerPlayers = this.players.filter(
+      player => player.hand[player.hand.length - 1] < card
+    );
+    if (smallerPlayers.length > 0) {
+      let smallest = smallerPlayers[0];
+      for (player of smallerPlayers) {
+        if (player.hand[player.hand.length - 1] < smallest.hand[smallest.hand.length - 1]) {
+          smallest = player;
+        }
+      }
+      this.smallestPlayer = smallest;
     }
-    // Game won
+    // Level passed
     if (this.pile.length - 1 === this.totalCards) {
-      console.log(`Level ${this.lvl} passed!`);
       this.lvl++;
     }
   };

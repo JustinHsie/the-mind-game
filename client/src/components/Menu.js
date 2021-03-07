@@ -7,7 +7,7 @@ export function Menu(props) {
       <h3 className="p-mr-4">The Mind</h3>
       <Button
         onClick={props.onNewGameClick}
-        className="p-m-2 p-button-sm"
+        className="p-m-2 p-button-sm p-button-rounded"
         label="New Game"
       />
     </div>

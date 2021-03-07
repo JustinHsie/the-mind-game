@@ -1,4 +1,5 @@
 import express from 'express';
+import session from 'express-session';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Game } from './Game/game.js';
@@ -19,8 +20,30 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Gameplay
-let game = null;
+// Session
+
+const sessionConfig = {
+  name: 'session',
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 1000 * 60 * 60 * 12 },
+};
+
+if (app.get('env') === 'production') {
+  app.set('trust proxy', 1); // trust first proxy
+  sessionConfig.cookie.secure = true; // serve secure cookies
+}
+
+app.use(session(sessionConfig));
+
+// Get session
+app.get('/session', function (req, res) {
+  res.json(req.session.playerId);
+});
+
+// Game setup initial
+let game = new Game();
 
 // New game
 app.get('/game/new', (req, res) => {
@@ -37,6 +60,7 @@ app.get('/game', (req, res) => {
 app.post('/players/new', (req, res) => {
   let { name } = req.body;
   let id = game.addPlayer(name);
+  req.session.playerId = id;
   res.json(id);
 });
 
@@ -49,8 +73,8 @@ app.get('/cards/deal', (req, res) => {
 // Play card
 app.post('/cards/play', (req, res) => {
   let { id } = req.body;
-  game.playCard(id);
-  res.sendStatus(200);
+  let outcome = game.playCard(id);
+  res.json(outcome);
 });
 
 // Get player
@@ -60,6 +84,9 @@ app.get('/players/');
 io.on('connection', socket => {
   socket.on('event', () => {
     io.emit('event', game);
+  });
+  socket.on('newGame', () => {
+    io.emit('newGame', game);
   });
 });
 
