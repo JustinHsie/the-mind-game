@@ -10,7 +10,7 @@ In 'The Mind', all players are on the same team and dealt cards from a deck numb
 At Level 1 each player is dealt one card, then two cards for Level 2, and so on. See how many levels you can complete!
 
 ### Features
-* Real-time updates and re-rendering of the current game state for all clients playing the game
+* Real-time re-rendering of the current game state for all clients playing the game
 * Randomly shuffled decks and player hands are dealt pre-sorted
 * Intuitive UI feedback on game progress and player card counts during gameplay
 
