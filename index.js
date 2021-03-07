@@ -42,12 +42,18 @@ app.get('/session', function (req, res) {
   res.json(req.session.playerId);
 });
 
+// Destroy session
+app.delete('/session', function (req, res) {
+  req.session.destroy();
+});
+
 // Game setup initial
 let game = new Game();
 
 // New game
 app.get('/game/new', (req, res) => {
   game = new Game();
+  io.emit('continue');
   res.json(game);
 });
 
@@ -67,14 +73,20 @@ app.post('/players/new', (req, res) => {
 // Deal cards
 app.get('/cards/deal', (req, res) => {
   game.dealCards();
+  io.emit('showStart', false);
   res.sendStatus(200);
 });
 
 // Play card
 app.post('/cards/play', (req, res) => {
+  io.emit('continue');
   let { id } = req.body;
   let outcome = game.playCard(id);
-  res.json(outcome);
+  if (outcome === 'PASS') {
+    io.emit('pass');
+    io.emit('showStart', true);
+  }
+  res.sendStatus(200);
 });
 
 // Get player

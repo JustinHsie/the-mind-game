@@ -1,10 +1,10 @@
 import { Card } from 'primereact/card';
 
-export function CardGameOver(props) {
+export function CardPass(props) {
   return (
     <Card
       style={{
-        background: '#ff6363',
+        background: '#63ff83',
         width: '15rem',
         height: '20rem',
         marginBottom: '2em',

@@ -2,7 +2,7 @@ export class Game {
   constructor() {
     this.players = [];
     this.totalCards = 0;
-    this.pile = [0];
+    this.pile = [];
     this.lvl = 1;
     this.smallestPlayer = null;
   }
@@ -94,15 +94,19 @@ export class Game {
     if (smallerPlayers.length > 0) {
       let smallest = smallerPlayers[0];
       for (player of smallerPlayers) {
-        if (player.hand[player.hand.length - 1] < smallest.hand[smallest.hand.length - 1]) {
+        if (
+          player.hand[player.hand.length - 1] <
+          smallest.hand[smallest.hand.length - 1]
+        ) {
           smallest = player;
         }
       }
       this.smallestPlayer = smallest;
     }
     // Level passed
-    if (this.pile.length - 1 === this.totalCards) {
+    if (this.pile.length === this.totalCards) {
       this.lvl++;
+      return 'PASS';
     }
   };
 }

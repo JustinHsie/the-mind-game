@@ -1,9 +1,7 @@
 import React from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-import { CardLarge } from './CardLarge';
 import { CardSmall } from './CardSmall';
-import { CardGameOver } from './CardGameOver';
 
 export function Game(props) {
   return (
@@ -11,8 +9,7 @@ export function Game(props) {
       <div className="p-grid p-align-start">
         <div className="p-col-3 p-d-flex p-jc-center">
           <div className="p-grid p-dir-col">
-            <h1></h1>
-            <h2 className="p-col p-d-flex p-jc-center">Players: </h2>
+            <h2 className="p-col p-d-flex p-jc-center p-mt-5">Players: </h2>
             <div>
               {props.players.length > 0
                 ? props.players.map(player => {
@@ -51,26 +48,14 @@ export function Game(props) {
             <div>
               <h1 className="p-col p-d-flex p-jc-center">Level: {props.lvl}</h1>
             </div>
-            {props.smallestPlayer !== null ? (
-              <div className="p-d-flex p-jc-center p-m-2">
-                <CardGameOver
-                  pileTop={`Game over! ${props.smallestPlayer.name} had a ${
-                    props.smallestPlayer.hand[
-                      props.smallestPlayer.hand.length - 1
-                    ]
-                  }`}
-                />
-              </div>
-            ) : (
-              <div className="p-d-flex p-jc-center p-m-2">
-                <CardLarge pileTop={props.pileTop} />
-              </div>
-            )}
-            <Button
-              onClick={props.onDealClick}
-              className="p-button-raised p-button-rounded p-button-warning"
-              label="Deal Cards"
-            />
+            {props.displayCard}
+            {props.showStart === true ? (
+              <Button
+                onClick={props.onDealClick}
+                className="p-button-raised p-button-rounded p-button-warning"
+                label="Start!"
+              />
+            ) : null}
           </div>
         </div>
         <div className="p-col-4 p-d-flex p-jc-center">
