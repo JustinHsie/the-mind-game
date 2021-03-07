@@ -4,7 +4,7 @@ import { Game as GameComponent } from '../../components/Game';
 import { Menu } from '../../components/Menu';
 import { io } from 'socket.io-client';
 import { DisplayCard } from '../../components/DisplayCard';
-const socket = io();
+const socket = io('/');
 
 export class Game extends React.Component {
   constructor(props) {
