@@ -1,6 +1,7 @@
 ## Welcome!
 
-To check out the game, please visit: https://the-mind-cardgame.herokuapp.com/
+To check out the game, please visit: https://the-mind-cardgame.herokuapp.com/  
+Or watch the demo: https://www.youtube.com/watch?v=5oFv8xU_q4s
 
 This is an original project idea (not from a tutorial or class) that makes an app adaptation of the card game 'The Mind'. Not affiliated with the official publishers in any way.
 
